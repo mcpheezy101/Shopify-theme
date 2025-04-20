@@ -1,0 +1,343 @@
+<!-- Cart Template -->
+<div class="cart">
+  <div class="container">
+    <h1 class="cart-title">Your Cart</h1>
+    
+    {% if cart.item_count > 0 %}
+      <form action="/cart" method="post" novalidate>
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th class="cart-header">Product</th>
+              <th class="cart-header">Price</th>
+              <th class="cart-header">Quantity</th>
+              <th class="cart-header">Total</th>
+              <th class="cart-header"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart.items %}
+              <tr class="cart-row">
+                <td class="cart-cell">
+                  <div class="cart-product">
+                    <a href="{{ item.url }}">
+                      <img src="{{ item.image | img_url: 'compact' }}" alt="{{ item.title }}" class="cart-product-image">
+                    </a>
+                    <div>
+                      <h3 class="cart-product-title">
+                        <a href="{{ item.url }}">{{ item.product.title }}</a>
+                      </h3>
+                      {% if item.variant.title != 'Default Title' %}
+                        <p class="cart-product-variant">{{ item.variant.title }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+                </td>
+                <td class="cart-cell">
+                  <span class="cart-product-price">{{ item.price | money }}</span>
+                </td>
+                <td class="cart-cell">
+                  <input type="number" name="updates[{{ item.key }}]" id="updates_{{ item.key }}" value="{{ item.quantity }}" min="1" class="cart-quantity">
+                </td>
+                <td class="cart-cell">
+                  <span class="cart-product-line-price">{{ item.line_price | money }}</span>
+                </td>
+                <td class="cart-cell">
+                  <a href="/cart/change?line={{ forloop.index }}&quantity=0" class="cart-remove">
+                    <i class="fa fa-times"></i>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        
+        <div class="cart-footer">
+          <div class="cart-note">
+            <label for="CartNote" class="cart-note-label">Order Notes</label>
+            <textarea name="note" id="CartNote" class="cart-note-textarea">{{ cart.note }}</textarea>
+            
+            <div style="margin-top: 30px;">
+              <h3 style="margin-bottom: 15px;">Need Help?</h3>
+              <p style="margin-bottom: 10px;">If you have questions about your order, please contact us:</p>
+              <p>
+                Email: <a href="mailto:support@youremail.com">support@youremail.com</a><br>
+                Phone: (123) 456-7890
+              </p>
+            </div>
+          </div>
+          
+          <div class="cart-total">
+            <div class="total-row">
+              <span>Subtotal</span>
+              <span>{{ cart.total_price | money }}</span>
+            </div>
+            
+            <div class="total-row">
+              <span>Shipping</span>
+              <span>Calculated at checkout</span>
+            </div>
+            
+            {% if cart.total_discount > 0 %}
+              <div class="total-row">
+                <span>Discount</span>
+                <span>-{{ cart.total_discount | money }}</span>
+              </div>
+            {% endif %}
+            
+            <div class="total-row final">
+              <span>Total</span>
+              <span>{{ cart.total_price | money }}</span>
+            </div>
+            
+            <div style="margin-top: 30px;">
+              <button type="submit" name="update" class="update-cart" style="width: 100%; padding: 12px; background: none; border: 1px solid #ddd; margin-bottom: 15px; cursor: pointer;">
+                Update Cart
+              </button>
+              
+              <button type="submit" name="checkout" class="checkout-button">
+                Checkout
+              </button>
+            </div>
+            
+            <div style="margin-top: 20px; text-align: center;">
+              <a href="/collections/all" class="continue-shopping">
+                <i class="fa fa-long-arrow-left"></i> Continue Shopping
+              </a>
+            </div>
+          </div>
+        </div>
+      </form>
+    {% else %}
+      <div class="cart-empty">
+        <p style="font-size: 18px; margin-bottom: 20px;">Your cart is currently empty.</p>
+        <p style="margin-bottom: 30px;">Find something beautiful for your next celebration!</p>
+        <a href="/collections/all" class="btn">Start Shopping</a>
+      </div>
+    {% endif %}
+    
+    <!-- Recommended Products -->
+    <div class="recommended-products" style="margin-top: 80px;">
+      <h2 class="section-title">You Might Like</h2>
+      
+      <div class="products-grid">
+        {% for product in collections.frontpage.products limit: 4 %}
+          <div class="product-card">
+            <div class="product-image-wrap">
+              <a href="{{ product.url }}">
+                <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}" class="product-image">
+              </a>
+              <div class="quick-view">Quick View</div>
+            </div>
+            <div class="product-info">
+              <h3 class="product-title">
+                <a href="{{ product.url }}">{{ product.title }}</a>
+              </h3>
+              <div class="product-price">
+                {% if product.compare_at_price > product.price %}
+                  <span class="product-price-regular">{{ product.compare_at_price | money }}</span>
+                  <span class="product-price-sale">{{ product.price | money }}</span>
+                {% else %}
+                  <span>{{ product.price | money }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.cart {
+  padding: 80px 0;
+}
+
+.cart-title {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.cart-empty {
+  text-align: center;
+  padding: 50px 0;
+}
+
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cart-header {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  text-align: left;
+}
+
+.cart-row {
+  border-bottom: 1px solid #eee;
+}
+
+.cart-cell {
+  padding: 20px 10px;
+  vertical-align: middle;
+}
+
+.cart-product {
+  display: flex;
+  align-items: center;
+}
+
+.cart-product-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  margin-right: 20px;
+  border-radius: 4px;
+}
+
+.cart-product-title {
+  font-weight: 500;
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+
+.cart-product-variant {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.cart-quantity {
+  width: 80px;
+  padding: 5px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.cart-remove {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+}
+
+.cart-remove:hover {
+  color: var(--primary-color);
+}
+
+.cart-footer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.cart-note {
+  width: 48%;
+}
+
+.cart-note-label {
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.cart-note-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  height: 100px;
+  resize: vertical;
+}
+
+.cart-total {
+  width: 48%;
+  background-color: var(--light-bg);
+  padding: 30px;
+  border-radius: 8px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.total-row.final {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.update-cart {
+  transition: background-color 0.3s ease;
+}
+
+.update-cart:hover {
+  background-color: #eee;
+}
+
+.checkout-button {
+  width: 100%;
+  padding: 15px;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.checkout-button:hover {
+  background-color: var(--secondary-color);
+}
+
+.continue-shopping {
+  display: inline-block;
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.continue-shopping:hover {
+  color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  .cart-table {
+    display: block;
+    overflow-x: auto;
+  }
+  
+  .cart-footer {
+    flex-direction: column;
+  }
+  
+  .cart-note,
+  .cart-total {
+    width: 100%;
+    margin-bottom: 30px;
+  }
+}
+</style>
+
+<script>
+  // Cart quantity update
+  document.addEventListener('DOMContentLoaded', function() {
+    const quantityInputs = document.querySelectorAll('.cart-quantity');
+    
+    quantityInputs.forEach(input => {
+      input.addEventListener('change', function() {
+        // Optional: Auto-submit form when quantity changes
+        // document.querySelector('form').submit();
+      });
+    });
+  });
+</script>

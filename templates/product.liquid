@@ -379,4 +379,369 @@
   }
   
   .product-gallery {
-    position:
+    position: static;
+  }
+}
+
+@media (max-width: 576px) {
+  .product-title {
+    font-size: 1.5rem;
+  }
+  
+  .tab-button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+}
+</style>
+
+<script>
+  // Product image gallery
+  document.addEventListener('DOMContentLoaded', function() {
+    const thumbnails = document.querySelectorAll('.gallery-thumbnail');
+    const mainImage = document.getElementById('ProductPhotoImg');
+    
+    thumbnails.forEach(thumbnail => {
+      thumbnail.addEventListener('click', function() {
+        // Remove active class from all thumbnails
+        thumbnails.forEach(t => t.classList.remove('active'));
+        
+        // Add active class to clicked thumbnail
+        this.classList.add('active');
+        
+        // Update main image
+        const imgUrl = this.querySelector('img').src.replace('_compact', '_large');
+        mainImage.src = imgUrl;
+      });
+    });
+    
+    // Quantity adjustment
+    const quantityInput = document.getElementById('Quantity');
+    const plusBtn = document.getElementById('QuantityPlus');
+    const minusBtn = document.getElementById('QuantityMinus');
+    
+    plusBtn.addEventListener('click', function() {
+      let quantity = parseInt(quantityInput.value);
+      quantityInput.value = quantity + 1;
+    });
+    
+    minusBtn.addEventListener('click', function() {
+      let quantity = parseInt(quantityInput.value);
+      if (quantity > 1) {
+        quantityInput.value = quantity - 1;
+      }
+    });
+    
+    // Product tabs
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all buttons and contents
+        tabButtons.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => {
+          c.style.display = 'none';
+          c.classList.remove('active');
+        });
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Show corresponding content
+        const tabId = this.getAttribute('data-tab');
+        const activeTab = document.getElementById(tabId + '-tab');
+        activeTab.style.display = 'block';
+        activeTab.classList.add('active');
+      });
+    });
+  });
+</script></span>
+          </div>
+          
+          <div style="display: flex; align-items: center;">
+            <i class="fa fa-undo" style="margin-right: 10px; font-size: 18px;"></i>
+            <span><strong>Easy Returns</strong> within 30 days</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Product Tabs -->
+    <div class="product-tabs" style="margin-top: 60px;">
+      <div class="tabs-header" style="display: flex; border-bottom: 1px solid #eee; margin-bottom: 30px;">
+        <button class="tab-button active" data-tab="description">Description</button>
+        <button class="tab-button" data-tab="shipping">Shipping & Returns</button>
+        <button class="tab-button" data-tab="reviews">Reviews</button>
+      </div>
+      
+      <div class="tab-content active" id="description-tab">
+        <div class="rich-text">
+          {{ product.description }}
+        </div>
+      </div>
+      
+      <div class="tab-content" id="shipping-tab" style="display: none;">
+        <div class="rich-text">
+          <h3>Shipping Information</h3>
+          <p>We process all orders within 1-2 business days. Orders are shipped via USPS or FedEx and typically arrive within 3-5 business days after processing.</p>
+          
+          <h4>Shipping Rates</h4>
+          <ul>
+            <li>Orders under $50: $5.95 flat rate shipping</li>
+            <li>Orders over $50: FREE shipping</li>
+          </ul>
+          
+          <h3>Return Policy</h3>
+          <p>We accept returns within 30 days of delivery. Items must be unused and in original packaging. Please email us at support@youremail.com to initiate a return.</p>
+        </div>
+      </div>
+      
+      <div class="tab-content" id="reviews-tab" style="display: none;">
+        <div class="reviews-container">
+          <!-- This is where your reviews app would display -->
+          <p>Reviews coming soon! Be the first to review this product.</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Related Products -->
+    <div class="related-products" style="margin-top: 80px;">
+      <h2 class="section-title">You May Also Like</h2>
+      
+      <div class="products-grid">
+        {% for product in collections.all.products limit: 4 %}
+          <div class="product-card">
+            <div class="product-image-wrap">
+              <a href="{{ product.url }}">
+                <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}" class="product-image">
+              </a>
+              <div class="quick-view">Quick View</div>
+            </div>
+            <div class="product-info">
+              <h3 class="product-title">
+                <a href="{{ product.url }}">{{ product.title }}</a>
+              </h3>
+              <div class="product-price">
+                {% if product.compare_at_price > product.price %}
+                  <span class="product-price-regular">{{ product.compare_at_price | money }}</span>
+                  <span class="product-price-sale">{{ product.price | money }}</span>
+                {% else %}
+                  <span>{{ product.price | money }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.product {
+  padding: 80px 0;
+}
+
+.product-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 50px;
+}
+
+.product-gallery {
+  position: sticky;
+  top: 100px;
+}
+
+.gallery-main {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gallery-main-image {
+  width: 100%;
+  height: auto;
+}
+
+.gallery-thumbnails {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.gallery-thumbnail {
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.gallery-thumbnail-image {
+  width: 100%;
+  height: auto;
+  transition: opacity 0.3s ease;
+}
+
+.gallery-thumbnail.active {
+  border: 2px solid var(--primary-color);
+}
+
+.gallery-thumbnail:hover .gallery-thumbnail-image {
+  opacity: 0.8;
+}
+
+.product-details {
+  padding: 20px 0;
+}
+
+.product-title {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.product-price {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.product-price-regular {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.product-price-saving {
+  display: block;
+  font-size: 1rem;
+  color: #4caf50;
+  margin-top: 5px;
+}
+
+.product-description {
+  margin-bottom: 30px;
+  line-height: 1.8;
+}
+
+.product-options {
+  margin-bottom: 30px;
+}
+
+.option-label {
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.option-select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.quantity-selector {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+}
+
+.quantity-button {
+  width: 40px;
+  height: 40px;
+  background-color: var(--light-bg);
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.quantity-input {
+  width: 60px;
+  height: 40px;
+  border: 1px solid #ddd;
+  text-align: center;
+  margin: 0 10px;
+}
+
+.add-to-cart {
+  width: 100%;
+  padding: 15px;
+  font-size: 1rem;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.add-to-cart:hover {
+  background-color: var(--secondary-color);
+}
+
+.product-meta {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid #ddd;
+}
+
+.meta-item {
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.meta-label {
+  font-weight: 600;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  opacity: 0.7;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-button.active {
+  opacity: 1;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@media (max-width: 992px) {
+  .product-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .product-gallery {
+    position: static;
+  }
+}
+
+@media (max-width: 576px) {
+  .product-title {
+    font-size: 1.5rem;
+  }
+  
+  .tab-button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+}
